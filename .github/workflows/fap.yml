@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout your repo
         uses: actions/checkout@v3
 
       - name: Install dependencies
@@ -27,9 +27,12 @@ jobs:
           cd flipperzero-firmware
           ./fbt toolchain
 
-      - name: Copy plugin and patch build system
+      - name: Copy your app to firmware
         run: |
           cp -r applications_user flipperzero-firmware/
+
+      - name: Patch firmware CMakeLists to include your app
+        run: |
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
       - name: Build all FAPs
@@ -37,21 +40,12 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Build only ir_brute_force app with verbose output
+      - name: Debug: list all .fap files
         run: |
-         cd flipperzero-firmware
-         ./fbt fap_ir_brute_force -v || echo "Build failed"
+          find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
 
-      - name: Check ir_brute_force build folder
-        run: |
-          ls -lR flipperzero-firmware/build | grep -i ir_brute_force || echo "Not found"
-
-      - name: List all .fap files for debugging
-        run: |
-          find flipperzero-firmware -name "*.fap"
-
-      - name: Upload all built FAPs
+      - name: Upload FAPs
         uses: actions/upload-artifact@v4
         with:
-          name: all-faps
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps
+          name: faps
+          path: flipperzero-firmware/build/f7-firmware-D/.extapps/*.fap
