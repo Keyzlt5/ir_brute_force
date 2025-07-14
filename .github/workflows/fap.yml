@@ -51,3 +51,4 @@ jobs:
         with:
           name: faps
           path: flipperzero-firmware/build/f7-firmware-D/.extapps/*.fap
+ 
