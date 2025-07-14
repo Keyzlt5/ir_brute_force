@@ -44,8 +44,8 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Upload FAP
+      - name: Upload all FAPs
         uses: actions/upload-artifact@v4
         with:
-          name: ir_brute_force.fap
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps/ir_brute_force.fap
+          name: faps
+          path: flipperzero-firmware/build/f7-firmware-D/.extapps/*.fap
