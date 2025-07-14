@@ -37,10 +37,10 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Build all FAPs with debug output
+      - name: Build only ir_brute_force app with verbose output
         run: |
-          cd flipperzero-firmware
-          ./fbt faps -v
+         cd flipperzero-firmware
+         ./fbt fap_ir_brute_force -v || echo "Build failed"
 
       - name: Check ir_brute_force build folder
         run: |
