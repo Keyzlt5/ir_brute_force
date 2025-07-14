@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +18,7 @@ jobs:
           sudo apt update
           sudo apt install -y python3 git cmake build-essential ninja-build \
             libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
+          python3 -m pip install --upgrade pip
           pip install pyelftools
 
       - name: Clone flipperzero-firmware
@@ -36,7 +36,7 @@ jobs:
           echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
           cp applications_user/ir_brute_force/application.fam flipperzero-firmware/applications_user/ir_brute_force/
 
-      path: flipperzero-firmware/build/f7-firmware-D/.extapps
+      - name: Debug: List ir_brute_force plugin directory
         run: |
           ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
 
@@ -49,7 +49,7 @@ jobs:
         run: |
           ls -lR flipperzero-firmware/build || echo "No build directory found"
 
-      - - name: Upload all FAPs
+      - name: Upload all FAPs
         uses: actions/upload-artifact@v4
         with:
           name: faps
