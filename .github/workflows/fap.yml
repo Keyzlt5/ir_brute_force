@@ -31,12 +31,10 @@ jobs:
       - name: Add .fam manifest
         run: |
           cat <<EOF > flipperzero-firmware/applications_user/ir_brute_force/application.fam
-          App( 
-              appid="ir_brute_force", 
-              name="IR Brute Force", 
-              entry_point="ir_brute_force", 
-              visible=True, 
-              icon="default" 
+          App(
+              appid="ir_brute_force",
+              name="IR Brute Force",
+              entry_point="ir_brute_force"
           )
           EOF
 
