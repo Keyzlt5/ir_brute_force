@@ -39,6 +39,10 @@ jobs:
         run: |
          grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
 
+      - name: Debug list all FAPs
+        run: |
+         find flipperzero-firmware/build -name "*.fap"
+
       - name: Build all FAPs
         run: |
           cd flipperzero-firmware
