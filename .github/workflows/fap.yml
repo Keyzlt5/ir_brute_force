@@ -32,17 +32,13 @@ jobs:
           cp -r applications_user flipperzero-firmware/
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Build all FAPs
+      - name: Build All FAPs
         run: |
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: Find all fap files
+      - name: Debug: Show all .fap files
         run: find flipperzero-firmware -name "*.fap"
-
-      - name: Debug: Print build logs for ir_brute_force
-        run: |
-          find flipperzero-firmware -name "build.log" -exec grep -i ir_brute_force {} + || echo "No ir_brute_force build logs found"
 
       - name: Upload built FAP
         uses: actions/upload-artifact@v4
