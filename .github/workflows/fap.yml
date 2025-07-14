@@ -39,10 +39,10 @@ jobs:
           )
           EOF
 
-      - name: Build FAP
+      - name: Build All FAPs
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force
+          ./fbt faps
 
       - name: Upload FAP
         uses: actions/upload-artifact@v4
