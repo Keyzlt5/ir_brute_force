@@ -30,7 +30,7 @@ jobs:
           mkdir -p flipperzero-firmware/applications_user/ir_brute_force
           echo 'add_subdirectory(ir_brute_force)' > flipperzero-firmware/applications_user/CMakeLists.txt
           echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
-          echo "App(\"ir_brute_force\", \"IR Brute Force\", \"ir_brute_force\", \"app\")" > flipperzero-firmware/applications_user/ir_brute_force/application.fam
+          echo 'App("ir_brute_force", "IR Brute Force", "ir_brute_force", "app")' > flipperzero-firmware/applications_user/ir_brute_force/application.fam
 
       - name: Debug: List ir_brute_force plugin directory
         run: |
