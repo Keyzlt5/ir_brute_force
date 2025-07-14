@@ -32,16 +32,17 @@ jobs:
           cp -r applications_user flipperzero-firmware/
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Build All FAPs
+      - name: Build all FAPs
         run: |
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: List FAPs
-        run: find flipperzero-firmware -name "*.fap" || echo "No FAPs found"
+      - name: List all .fap files for debugging
+        run: |
+          find flipperzero-firmware -name "*.fap"
 
-      - name: Upload all FAPs
+      - name: Upload all built FAPs
         uses: actions/upload-artifact@v4
         with:
           name: all-faps
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps/
+          path: flipperzero-firmware/build/f7-firmware-D/.extapps
