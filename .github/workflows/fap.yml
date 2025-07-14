@@ -43,6 +43,11 @@ jobs:
         run: |
          find flipperzero-firmware/build -name "*.fap"
 
+         - name: Debug list registered FAP targets
+           run: |
+             cd flipperzero-firmware
+             ./fbt list | grep fap_ || echo "No FAP targets found"
+
       - name: Build all FAPs
         run: |
           cd flipperzero-firmware
