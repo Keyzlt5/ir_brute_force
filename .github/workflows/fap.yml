@@ -1,0 +1,22 @@
+name: Build FAP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: flipperdevices/flipperzero-firmware:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build plugin
+        run: |
+          ./fbt fap_ir_brute_force
+      - name: Upload FAP
+        uses: actions/upload-artifact@v3
+        with:
+          name: ir_brute_force.fap
+          path: build/f7-firmware-D/.extapps/ir_brute_force.fap

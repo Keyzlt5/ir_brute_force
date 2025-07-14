@@ -1,0 +1,1 @@
+add_subdirectory(ir_brute_force)
