@@ -13,39 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3 git cmake build-essential ninja-build \
-            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
-          python3 -m pip install --upgrade pip
-          pip install pyelftools
-
-      - name: Clone flipperzero-firmware
-        run: |
-          git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
-          cd flipperzero-firmware
-          ./fbt toolchain
-
-      - name: Copy plugin and patch build system
-        run: |
-          cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-
-      - name: Build all FAPs
-        run: |
-          cd flipperzero-firmware
-          ./fbt faps
-
-      - name: Debug: Find all fap files
-        run: find flipperzero-firmware -name "*.fap"
-
-      - name: Debug: Print build logs for ir_brute_force
-        run: |
-          find flipperzero-firmware -name "build.log" -exec grep -i ir_brute_force {} + || echo "No ir_brute_force build logs found"
-
-      - name: Upload built FAP
+      - name: Upload placeholder
         uses: actions/upload-artifact@v4
         with:
-          name: ir_brute_force.fap
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps/ir_brute_force.fap
+          name: test
+          path: README.md
