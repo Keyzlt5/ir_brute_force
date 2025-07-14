@@ -45,8 +45,9 @@ jobs:
         run: |
           ls -lR flipperzero-firmware/build || echo "No build directory found"
 
-      - name: Debug: Find all .fap files
-        run: find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
+      - name: Debug Find all fap files
+        run: |
+          find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
 
       - name: Upload all FAPs
         uses: actions/upload-artifact@v4
