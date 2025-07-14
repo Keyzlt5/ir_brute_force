@@ -39,14 +39,18 @@ jobs:
           )
           EOF
 
+      - name: Debug: List ir_brute_force plugin directory
+        run: |
+          ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
+
       - name: Build All FAPs
         run: |
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: List build output
+      - name: Debug: List entire build directory
         run: |
-          ls -l flipperzero-firmware/build/f7-firmware-D/.extapps || echo "No .extapps directory found"
+          ls -lR flipperzero-firmware/build || echo "No build directory found"
 
       - name: Upload all FAPs
         uses: actions/upload-artifact@v4
