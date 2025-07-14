@@ -31,10 +31,6 @@ jobs:
         run: |
           cp -r applications_user flipperzero-firmware/
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-          mkdir -p flipperzero-firmware/applications_user/ir_brute_force
-          echo 'add_subdirectory(ir_brute_force)' > flipperzero-firmware/applications_user/CMakeLists.txt
-          echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
-          cp applications_user/ir_brute_force/application.fam flipperzero-firmware/applications_user/ir_brute_force/
 
       - name: Debug: List ir_brute_force plugin directory
         run: |
@@ -53,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: faps
-          path: "flipperzero-firmware/build/f7-firmware-D/.extapps"
+          path: flipperzero-firmware/build/f7-firmware-D/.extapps
