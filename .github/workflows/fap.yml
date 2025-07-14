@@ -30,30 +30,19 @@ jobs:
       - name: Copy plugin and patch build system
         run: |
           cp -r applications_user flipperzero-firmware/
-          echo "add_subdirectory(applications_user)" >> flipperzero-firmware/applications/CMakeLists.txt
+          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Debug List ir_brute_force plugin directory
-        run: |
-          ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
-
-      - name: Debug Dump CMakeLists.txt and application.fam
-        run: |
-          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing root CMakeLists"
-          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
-          cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing app manifest"
-
-      - name: Build All FAPs
+      - name: Build all FAPs
         run: |
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug List entire build directory
-        run: |
-          ls -lR flipperzero-firmware/build || echo "No build directory found"
+      - name: Debug: Find all fap files
+        run: find flipperzero-firmware -name "*.fap"
 
-      - name: Debug Find all fap files
+      - name: Debug: Print build logs for ir_brute_force
         run: |
-          find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
+          find flipperzero-firmware -name "build.log" -exec grep -i ir_brute_force {} + || echo "No ir_brute_force build logs found"
 
       - name: Upload built FAP
         uses: actions/upload-artifact@v4
