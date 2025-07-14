@@ -44,6 +44,10 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
+      - name: Debug Did it build the FAP?
+        run: |
+         find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "Still missing"
+
       - name: Debug list .fap files
         run: |
           find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
