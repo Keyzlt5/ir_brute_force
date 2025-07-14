@@ -35,6 +35,10 @@ jobs:
         run: |
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
+      - name: Debug Show all application folders registered
+        run: |
+         grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
+
       - name: Build all FAPs
         run: |
           cd flipperzero-firmware
