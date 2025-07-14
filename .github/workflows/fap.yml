@@ -23,13 +23,13 @@ jobs:
           cd flipperzero-firmware
           ./fbt toolchain
 
-      - name: Copy plugin
+      - name: Copy plugin and patch build system
         run: |
           cp -r applications_user flipperzero-firmware/
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-
-      - name: Add .fam manifest
-        run: |
+          mkdir -p flipperzero-firmware/applications_user
+          echo 'add_subdirectory(ir_brute_force)' > flipperzero-firmware/applications_user/CMakeLists.txt
+          echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
           cat <<EOF > flipperzero-firmware/applications_user/ir_brute_force/application.fam
           App(
               appid="ir_brute_force",
@@ -43,6 +43,10 @@ jobs:
         run: |
           cd flipperzero-firmware
           ./fbt faps
+
+      - name: List build output
+        run: |
+          ls -l flipperzero-firmware/build/f7-firmware-D/.extapps || echo "No .extapps directory found"
 
       - name: Upload all FAPs
         uses: actions/upload-artifact@v4
