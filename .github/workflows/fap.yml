@@ -40,7 +40,7 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: list all .fap files
+      - name: Debug list .fap files
         run: |
           find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
 
