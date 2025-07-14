@@ -1,1 +1,1 @@
-add_subdirectory(ir_brute_force)
+add_application(ir_brute_force "ir_brute_force.c")
