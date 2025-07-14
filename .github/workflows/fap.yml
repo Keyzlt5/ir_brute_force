@@ -36,7 +36,7 @@ jobs:
           echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
           cp applications_user/ir_brute_force/application.fam flipperzero-firmware/applications_user/ir_brute_force/
 
-      - name: Debug: List ir_brute_force plugin directory
+      path: flipperzero-firmware/build/f7-firmware-D/.extapps
         run: |
           ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
 
