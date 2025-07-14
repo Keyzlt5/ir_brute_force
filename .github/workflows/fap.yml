@@ -37,11 +37,11 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: Show all .fap files
-        run: find flipperzero-firmware -name "*.fap"
+      - name: Debug: List FAPs
+        run: find flipperzero-firmware -name "*.fap" || echo "No FAPs found"
 
       - name: Upload all FAPs
         uses: actions/upload-artifact@v4
         with:
           name: all-faps
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps/*.fap
+          path: flipperzero-firmware/build/f7-firmware-D/.extapps/
