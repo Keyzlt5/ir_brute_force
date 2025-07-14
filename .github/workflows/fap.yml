@@ -35,7 +35,7 @@ jobs:
               appid="ir_brute_force", 
               name="IR Brute Force", 
               entry_point="ir_brute_force", 
-              visible=true, 
+              visible=True, 
               icon="default" 
           )
           EOF
