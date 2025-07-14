@@ -1,53 +1,51 @@
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+name: Build FAP
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+on: push: branches: [main] workflow_dispatch:
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+jobs: build: runs-on: ubuntu-latest
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3 git cmake build-essential ninja-build \
-            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
-          pip install pyelftools
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v3
 
-      - name: Clone flipperzero-firmware
-        run: |
-          git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
-          cd flipperzero-firmware
-          ./fbt toolchain
+  - name: Install dependencies
+    run: |
+      sudo apt update
+      sudo apt install -y python3 git cmake build-essential ninja-build \
+        libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
+      pip install pyelftools
 
-      - name: Copy plugin and patch build system
-        run: |
-          cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-          mkdir -p flipperzero-firmware/applications_user/ir_brute_force
-          echo 'add_subdirectory(ir_brute_force)' > flipperzero-firmware/applications_user/CMakeLists.txt
-          echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
-          cp applications_user/ir_brute_force/application.fam flipperzero-firmware/applications_user/ir_brute_force/
+  - name: Clone flipperzero-firmware
+    run: |
+      git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
+      cd flipperzero-firmware
+      ./fbt toolchain
 
-      - name: Debug: List ir_brute_force plugin directory
-        run: |
-          ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
+  - name: Copy plugin and patch build system
+    run: |
+      cp -r applications_user flipperzero-firmware/
+      echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
+      mkdir -p flipperzero-firmware/applications_user/ir_brute_force
+      echo 'add_subdirectory(ir_brute_force)' > flipperzero-firmware/applications_user/CMakeLists.txt
+      echo 'add_application(ir_brute_force "ir_brute_force.c")' > flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
+      cp applications_user/ir_brute_force/application.fam flipperzero-firmware/applications_user/ir_brute_force/
 
-      - name: Build All FAPs
-        run: |
-          cd flipperzero-firmware
-          ./fbt faps
+  - name: Debug: List ir_brute_force plugin directory
+    run: |
+      ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
 
-      - name: Debug: List entire build directory
-        run: |
-          ls -lR flipperzero-firmware/build || echo "No build directory found"
+  - name: Build All FAPs
+    run: |
+      cd flipperzero-firmware
+      ./fbt faps
 
-      - name: Upload all FAPs
-        uses: actions/upload-artifact@v4
-        with:
-          name: faps
-          path: flipperzero-firmware/build/f7-firmware-D/.extapps/*.fap
+  - name: Debug: List entire build directory
+    run: |
+      ls -lR flipperzero-firmware/build || echo "No build directory found"
+
+  - name: Upload all FAPs
+    uses: actions/upload-artifact@v4
+    with:
+      name: faps
+      path: flipperzero-firmware/build/f7-firmware-D/.extapps
+
