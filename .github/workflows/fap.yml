@@ -37,6 +37,11 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
+      - name: Build all FAPs with debug output
+        run: |
+          cd flipperzero-firmware
+          ./fbt faps -v
+
       - name: Check ir_brute_force build folder
         run: |
           ls -lR flipperzero-firmware/build | grep -i ir_brute_force || echo "Not found"
