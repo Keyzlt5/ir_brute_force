@@ -30,9 +30,9 @@ jobs:
       - name: Copy plugin and patch build system
         run: |
           cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
+          echo "add_subdirectory(applications_user)" >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Debug: List ir_brute_force plugin directory
+      - name: Debug List ir_brute_force plugin directory
         run: |
           ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "ir_brute_force folder not found"
 
@@ -41,7 +41,7 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: List entire build directory
+      - name: Debug List entire build directory
         run: |
           ls -lR flipperzero-firmware/build || echo "No build directory found"
 
