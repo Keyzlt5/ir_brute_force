@@ -1,4 +1,4 @@
-name: Build and Upload ir_brute_force FAP
+name: Build ir_brute_force FAP
 
 on:
   push:
@@ -10,10 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout your repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Remove existing flipperzero-firmware directory if present
+      - name: Remove existing firmware folder (clean)
         run: rm -rf flipperzero-firmware
 
       - name: Clone Flipper Zero Firmware
@@ -27,25 +27,27 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install pyelftools
 
-      - name: Copy user applications
-        run: cp -r applications_user flipperzero-firmware/
+      - name: Patch firmware with user app
+        run: |
+          cp -r applications_user flipperzero-firmware/
+          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Patch firmware CMake to add user apps
-        run: echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-
-      - name: Debug Show contents of your app folder
-        run: ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "❌ ir_brute_force not found"
+      - name: Debug CMakeLists and manifest
+        run: |
+          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing root CMakeLists"
+          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
+          cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing .fam"
 
       - name: Clean previous builds
         run: rm -rf flipperzero-firmware/build
 
-      - name: Build all FAPs
+      - name: Build FAPs
         run: |
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug Find all FAPs
-        run: find flipperzero-firmware/build -name "*.fap"
+      - name: List built .fap files
+        run: find flipperzero-firmware/build -name '*.fap' || echo "❌ No FAPs found"
 
       - name: Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
