@@ -34,6 +34,11 @@ jobs:
           cp -r applications_user flipperzero-firmware/
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
+      - name: Debug check if ir_brute_force is registered
+        run: |
+          cd flipperzero-firmware
+          ./fbt list | grep ir_brute_force || echo "❌ Still not registered"
+
       - name: Build the ir_brute_force plugin
         run: |
           cd flipperzero-firmware
