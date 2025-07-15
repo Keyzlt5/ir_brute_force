@@ -14,9 +14,6 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
 
-      - name: Remove existing flipperzero-firmware dir
-        run: rm -rf flipperzero-firmware
-
       - name: Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
@@ -41,6 +38,7 @@ jobs:
           ./fbt ir_brute_force || echo "❌ ir_brute_force is NOT registered"
 
       - name: Upload ir_brute_force.fap
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ir_brute_force
@@ -49,3 +47,11 @@ jobs:
           compression-level: 6
           overwrite: false
           include-hidden-files: false
+
+      - name: Upload full build folder for inspection (if .fap fails)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full_build_output
+          path: flipperzero-firmware/build/
+          if-no-files-found: warn
