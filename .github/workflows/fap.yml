@@ -29,12 +29,7 @@ jobs:
       - name: 🧪 Test ir_brute_force is registered
         run: |
           cd flipperzero-firmware
-          ./fbt | grep fap_ || echo "❌ No FAP targets found"
-
-      - name: 🧪 List all fap targets
-        run: |
-          cd flipperzero-firmware
-          ./fbt | grep fap_ || echo "❌ No FAP targets available"
+          ./fbt list | grep fap_ir_brute_force || echo "❌ Still not registered"
 
       - name: Clean previous builds
         run: rm -rf flipperzero-firmware/build
