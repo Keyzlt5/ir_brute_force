@@ -71,6 +71,11 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
+      - name: Build IR Brute Force FAP directly
+        run: |
+          cd flipperzero-firmware
+          ./fbt fap_ir_brute_force || echo "❌ Target not found"
+
       - name: Debug Did it build the FAP?
         run: |
          find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "Still missing"
@@ -82,6 +87,11 @@ jobs:
       - name: Debug list .fap files
         run: |
           find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
+
+      - name: Debug List all registered FAP build targets
+        run: |
+          cd flipperzero-firmware
+          ./fbt list | grep fap_ || echo "❌ No FAP targets found"
 
       - name: Upload FAP
         uses: actions/upload-artifact@v4
