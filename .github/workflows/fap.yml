@@ -1,58 +1,57 @@
 name: Build and Upload IR Brute Force FAP
 
-on: 
-  push: 
+on:
+  push:
     branches:
-     - main 
-workflow_dispatch:
+      - main
+  workflow_dispatch:
 
-jobs: 
-  build: 
+jobs:
+  build:
     runs-on: ubuntu-latest
-    
- steps:
-   - name: Checkout repo
-     uses: actions/checkout@v3
 
-  - name: Install dependencies
-    run: |
-      sudo apt update
-      sudo apt install -y python3 git cmake build-essential ninja-build \
-        libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
-      python3 -m pip install --upgrade pip
-      pip install pyelftools
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-  - name: Clone flipperzero-firmware
-    run: |
-      git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
-      cd flipperzero-firmware
-      ./fbt toolchain
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3 git cmake build-essential ninja-build \
+            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
+          python3 -m pip install --upgrade pip
+          pip install pyelftools
 
-  - name: Copy plugin and patch build system
-    run: |
-      cp -r applications_user flipperzero-firmware/
-      echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
+      - name: Clone flipperzero-firmware
+        run: |
+          git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
+          cd flipperzero-firmware
+          ./fbt toolchain
 
-  - name: List ir_brute_force directory
-    run: |
-      ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "Missing plugin folder"
+      - name: Copy plugin and patch build system
+        run: |
+          cp -r applications_user flipperzero-firmware/
+          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-  - name: Build all FAPs
-    run: |
-      cd flipperzero-firmware
-      ./fbt faps
+      - name: List ir_brute_force directory
+        run: |
+          ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "Missing plugin folder"
 
-  - name: Check for ir_brute_force.fap
-    run: |
-      find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "❌ Still missing"
+      - name: Build all FAPs
+        run: |
+          cd flipperzero-firmware
+          ./fbt faps
 
-  - name: Upload ir_brute_force FAP
-    uses: actions/upload-artifact@v4
-    with:
-      name: ir_brute_force
-      path: flipperzero-firmware/build/**/ir_brute_force.fap
-      if-no-files-found: error
-      compression-level: 6
-      overwrite: false
-      include-hidden-files: false
+      - name: Check for ir_brute_force.fap
+        run: |
+          find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "❌ Still missing"
 
+      - name: Upload ir_brute_force FAP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ir_brute_force
+          path: flipperzero-firmware/build/**/ir_brute_force.fap
+          if-no-files-found: error
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
