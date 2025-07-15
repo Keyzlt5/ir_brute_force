@@ -35,6 +35,11 @@ jobs:
         run: |
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
+      - name: Debug: Check if FAP target exists
+        run: |
+          cd flipperzero-firmware
+          ./fbt fap_ir_brute_force || echo "fap_ir_brute_force target not found"
+
       - name: Debug Show all application folders registered
         run: |
          grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
