@@ -11,44 +11,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout your repo
+      - name: 📥 Checkout your repo
         uses: actions/checkout@v4
 
-      - name: Remove existing flipperzero-firmware dir
+      - name: 🧹 Remove existing firmware dir
         run: rm -rf flipperzero-firmware
 
-      - name: Clone Flipper Zero Firmware
+      - name: 🧲 Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
-      - name: Inject ir_brute_force app into firmware
+      - name: 📂 Copy your app into firmware source
         run: |
           mkdir -p flipperzero-firmware/applications_user/ir_brute_force
           cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
           cp applications_user/CMakeLists.txt flipperzero-firmware/applications_user/CMakeLists.txt
 
-      - name: Confirm files exist
+      - name: 🪵 Confirm files exist
         run: |
           ls -al flipperzero-firmware/applications_user/ir_brute_force
-          cat flipperzero-firmware/applications_user/CMakeLists.txt
+          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
+          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
+          cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing .fam"
 
-      - name: Add user apps to build tree
+      - name: ➕ Add user apps to build tree
         run: |
           echo "add_subdirectory(${CMAKE_SOURCE_DIR}/applications_user)" >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Clean previous builds
+      - name: 🧽 Clean previous builds
         run: rm -rf flipperzero-firmware/build
+
+      - name: 🔍 List all FBT build targets
+        run: |
+          cd flipperzero-firmware
+          ./fbt || true
 
       - name: ✅ Build ir_brute_force
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
+          ./fbt fap_ir_brute_force || (echo "❌ fap_ir_brute_force not found" && exit 1)
 
-      - name: List FAP targets
-        run: |
-          cd flipperzero-firmware
-          ./fbt | grep fap_ || echo "❌ No FAP targets found"
-
-      - name: Upload ir_brute_force.fap
+      - name: 📦 Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
         with:
           name: ir_brute_force
