@@ -20,13 +20,13 @@ jobs:
       - name: Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
-      - name: Copy app files into firmware tree
+      - name: Copy your app into firmware tree
         run: |
           mkdir -p flipperzero-firmware/applications_user/ir_brute_force
           cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
           cp applications_user/CMakeLists.txt flipperzero-firmware/applications_user/CMakeLists.txt
 
-      - name: List manifest and CMake for verification
+      - name: Verify source files
         run: |
           cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
           cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
@@ -35,13 +35,10 @@ jobs:
       - name: Clean previous builds
         run: rm -rf flipperzero-firmware/build
 
-      - name: Build ir_brute_force
+      - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || ./fbt ir_brute_force || echo "❌ ir_brute_force target not found"
-
-      - name: Debug list all .fap files
-        run: find flipperzero-firmware/build -name "*.fap" || echo "No FAPs found"
+          ./fbt ir_brute_force || echo "❌ ir_brute_force is NOT registered"
 
       - name: Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
