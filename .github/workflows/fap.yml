@@ -33,7 +33,7 @@ jobs:
       - name: Patch firmware CMake to add user apps
         run: echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Debug: Show contents of your app folder
+      - name: Debug Show contents of your app folder
         run: ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "❌ ir_brute_force not found"
 
       - name: Clean previous builds
