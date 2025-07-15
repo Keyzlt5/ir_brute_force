@@ -39,7 +39,7 @@ jobs:
       - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
-          ./fbt ir_brute_force
+          ./fbt fap
 
       - name: Upload built FAP artifact
         uses: actions/upload-artifact@v4
