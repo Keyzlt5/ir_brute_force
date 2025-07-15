@@ -1,40 +1,42 @@
-name: Build and Upload FAP
+name: Build ir_brute_force FAP
 
 on:
   push:
     branches:
       - main
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build cmake gcc-arm-none-eabi libnewlib-arm-none-eabi scons
+          sudo apt update
+          sudo apt install -y python3 git cmake build-essential ninja-build \
+            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
+          python3 -m pip install --upgrade pip
+          pip install pyelftools
+
+      - name: Remove existing flipperzero-firmware directory if present
+        run: rm -rf flipperzero-firmware
 
       - name: Clone flipperzero-firmware
-        run: |
-          git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
+        run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
-      - name: Copy user applications
-        run: |
-          cp -r ./applications_user ./flipperzero-firmware/
-
-      - name: Build firmware
+      - name: Install fbt toolchain
         run: |
           cd flipperzero-firmware
-          ./fbt f7
+          ./fbt toolchain
+
+      - name: Copy custom application source files
+        run: |
+          cp -r applications_user flipperzero-firmware/
+          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
       - name: Clean previous builds
         run: |
@@ -45,6 +47,9 @@ jobs:
           cd flipperzero-firmware
           ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
 
+      - name: Debug list all .fap files
+        run: find flipperzero-firmware/build -name "*.fap"
+
       - name: Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
         with:
@@ -52,12 +57,3 @@ jobs:
           path: flipperzero-firmware/build/**/ir_brute_force.fap
           if-no-files-found: error
           compression-level: 6
-
-      - name: Debug list all .fap files
-        run: |
-          find flipperzero-firmware/build -name "*.fap"
-
-      - name: Debug check ir_brute_force registration
-        run: |
-          grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
-          grep -r "App(" flipperzero-firmware/applications_user || echo "No App() manifests found"
