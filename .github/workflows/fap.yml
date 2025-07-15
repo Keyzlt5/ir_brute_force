@@ -53,6 +53,10 @@ jobs:
           cd flipperzero-firmware
           ./fbt list | grep fap_ || echo "No FAP targets found"
 
+      - name: Debug check for add_application registration
+        run: |
+         grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
+
       - name: Debug verify application.fam loaded
         run: |
          grep -r "apptype" flipperzero-firmware/applications_user || echo "application.fam not parsed"
