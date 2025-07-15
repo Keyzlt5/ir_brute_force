@@ -42,6 +42,11 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
+      - name: Debug List FAP targets
+        run: |
+          cd flipperzero-firmware
+          ./fbt list | grep fap_ || echo "No FAP targets registered"
+
       - name: Check for ir_brute_force.fap
         run: |
           find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "❌ Still missing"
