@@ -53,11 +53,11 @@ jobs:
           if-no-files-found: error
           compression-level: 6
 
-      - name: Debug: list all .fap files
+      - name: Debug list all .fap files
         run: |
           find flipperzero-firmware/build -name "*.fap"
 
-      - name: Debug: check ir_brute_force registration
+      - name: Debug check ir_brute_force registration
         run: |
           grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
           grep -r "App(" flipperzero-firmware/applications_user || echo "No App() manifests found"
