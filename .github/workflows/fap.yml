@@ -44,7 +44,7 @@ jobs:
           cd flipperzero-firmware
           ./fbt faps
 
-      - name: Debug: Find all FAPs
+      - name: Debug Find all FAPs
         run: find flipperzero-firmware/build -name "*.fap"
 
       - name: Upload ir_brute_force.fap
