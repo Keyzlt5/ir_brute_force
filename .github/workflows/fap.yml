@@ -1,4 +1,4 @@
-name: Build ir_brute_force FAP
+name: Build and Upload ir_brute_force FAP
 
 on:
   push:
@@ -9,10 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source code
+      - name: Checkout your repository
         uses: actions/checkout@v3
+
+      - name: Remove existing flipperzero-firmware directory if present
+        run: rm -rf flipperzero-firmware
+
+      - name: Clone Flipper Zero Firmware
+        run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
       - name: Install dependencies
         run: |
@@ -22,32 +27,24 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install pyelftools
 
-      - name: Remove existing flipperzero-firmware directory if present
-        run: rm -rf flipperzero-firmware
+      - name: Copy user applications
+        run: cp -r applications_user flipperzero-firmware/
 
-      - name: Clone flipperzero-firmware
-        run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
+      - name: Patch firmware CMake to add user apps
+        run: echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Install fbt toolchain
-        run: |
-          cd flipperzero-firmware
-          ./fbt toolchain
-
-      - name: Copy custom application source files
-        run: |
-          cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
+      - name: Debug: Show contents of your app folder
+        run: ls -lR flipperzero-firmware/applications_user/ir_brute_force || echo "❌ ir_brute_force not found"
 
       - name: Clean previous builds
-        run: |
-          rm -rf flipperzero-firmware/build
+        run: rm -rf flipperzero-firmware/build
 
-      - name: Build ir_brute_force FAP
+      - name: Build all FAPs
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
+          ./fbt faps
 
-      - name: Debug list all .fap files
+      - name: Debug: Find all FAPs
         run: find flipperzero-firmware/build -name "*.fap"
 
       - name: Upload ir_brute_force.fap
@@ -57,3 +54,5 @@ jobs:
           path: flipperzero-firmware/build/**/ir_brute_force.fap
           if-no-files-found: error
           compression-level: 6
+          overwrite: false
+          include-hidden-files: false
