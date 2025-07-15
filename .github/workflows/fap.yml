@@ -39,6 +39,11 @@ jobs:
           cd flipperzero-firmware
           ./fbt list | grep ir_brute_force || echo "❌ Still not registered"
 
+      - name: Try building just ir_brute_force
+        run: |
+          cd flipperzero-firmware
+          ./fbt fap_ir_brute_force || echo "❌ ir_brute_force is NOT registered"
+
       - name: Build the ir_brute_force plugin
         run: |
           cd flipperzero-firmware
