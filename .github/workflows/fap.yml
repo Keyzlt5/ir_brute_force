@@ -1,4 +1,4 @@
-name: Build ir_brute_force FAP
+name: Build IR Brute Force App
 
 on:
   push:
@@ -9,45 +9,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
 
-      - name: Remove existing firmware folder (clean)
+    steps:
+      - name: Checkout your repo
+        uses: actions/checkout@v4
+
+      - name: Remove existing flipperzero-firmware dir
         run: rm -rf flipperzero-firmware
 
       - name: Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
-      - name: Install dependencies
+      - name: List application CMakeLists.txt for verification
         run: |
-          sudo apt update
-          sudo apt install -y python3 git cmake build-essential ninja-build \
-            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
-          python3 -m pip install --upgrade pip
-          pip install pyelftools
-
-      - name: Patch firmware with user app
-        run: |
-          cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
-
-      - name: Debug CMakeLists and manifest
-        run: |
-          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing root CMakeLists"
+          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
           cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
           cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing .fam"
+
+      - name: 🧪 Test ir_brute_force is registered
+        run: |
+          cd flipperzero-firmware
+          ./fbt list | grep ir_brute_force || echo "❌ Still not registered"
+
+      - name: 🧪 List all fap targets
+        run: |
+          cd flipperzero-firmware
+          ./fbt | grep fap_ || echo "❌ No FAP targets available"
 
       - name: Clean previous builds
         run: rm -rf flipperzero-firmware/build
 
-      - name: Build FAPs
+      - name: ✅ Build ir_brute_force
         run: |
           cd flipperzero-firmware
-          ./fbt faps
-
-      - name: List built .fap files
-        run: find flipperzero-firmware/build -name '*.fap' || echo "❌ No FAPs found"
+          ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
 
       - name: Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
