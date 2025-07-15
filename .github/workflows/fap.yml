@@ -40,7 +40,7 @@ jobs:
           cd flipperzero-firmware
           ./fbt fap_ir_brute_force || ./fbt ir_brute_force || echo "❌ ir_brute_force target not found"
 
-      - name: Debug: list all .fap files
+      - name: Debug list all .fap files
         run: find flipperzero-firmware/build -name "*.fap" || echo "No FAPs found"
 
       - name: Upload ir_brute_force.fap
