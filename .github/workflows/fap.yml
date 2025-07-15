@@ -1,57 +1,63 @@
-name: Build ir_brute_force FAP
+name: Build and Upload FAP
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout user plugin code
+      - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y python3 git cmake build-essential ninja-build \
-            libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gcc-arm-none-eabi
-          python3 -m pip install --upgrade pip
-          pip install pyelftools
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake gcc-arm-none-eabi libnewlib-arm-none-eabi scons
 
-      - name: Clone Flipper Zero firmware
+      - name: Clone flipperzero-firmware
         run: |
-          rm -rf flipperzero-firmware
           git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
-          cd flipperzero-firmware
-          ./fbt toolchain
 
-      - name: Copy plugin and patch build system
+      - name: Copy user applications
         run: |
-          cp -r applications_user flipperzero-firmware/
-          echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
+          cp -r ./applications_user ./flipperzero-firmware/
 
-      - name: Debug check if ir_brute_force is registered
+      - name: Build firmware
         run: |
           cd flipperzero-firmware
-          ./fbt list | grep ir_brute_force || echo "❌ Still not registered"
+          ./fbt f7
 
-      - name: Try building just ir_brute_force
+      - name: Clean previous builds
+        run: |
+          rm -rf flipperzero-firmware/build
+
+      - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || echo "❌ ir_brute_force is NOT registered"
+          ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
 
-      - name: Build the ir_brute_force plugin
-        run: |
-          cd flipperzero-firmware
-          ./fbt fap_ir_brute_force
-
-      - name: Upload the .fap
+      - name: Upload ir_brute_force.fap
         uses: actions/upload-artifact@v4
         with:
           name: ir_brute_force
           path: flipperzero-firmware/build/**/ir_brute_force.fap
           if-no-files-found: error
+          compression-level: 6
+
+      - name: Debug: list all .fap files
+        run: |
+          find flipperzero-firmware/build -name "*.fap"
+
+      - name: Debug: check ir_brute_force registration
+        run: |
+          grep -r "add_application" flipperzero-firmware/applications_user || echo "No applications registered"
+          grep -r "App(" flipperzero-firmware/applications_user || echo "No App() manifests found"
