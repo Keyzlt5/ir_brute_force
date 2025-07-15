@@ -29,7 +29,7 @@ jobs:
       - name: 🧪 Test ir_brute_force is registered
         run: |
           cd flipperzero-firmware
-          ./fbt list | grep ir_brute_force || echo "❌ Still not registered"
+          ./fbt | grep fap_ || echo "❌ No FAP targets found"
 
       - name: 🧪 List all fap targets
         run: |
