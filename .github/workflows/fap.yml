@@ -35,7 +35,7 @@ jobs:
         run: |
           echo 'add_subdirectory(applications_user)' >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Debug: Check if FAP target exists
+      - name: Debug Check if FAP target exists
         run: |
           cd flipperzero-firmware
           ./fbt fap_ir_brute_force || echo "fap_ir_brute_force target not found"
