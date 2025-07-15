@@ -1,56 +1,54 @@
 name: Build IR Brute Force App
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: push: branches: - main workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+jobs: build: runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout your repo
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout your repo
+    uses: actions/checkout@v4
 
-      - name: Remove existing flipperzero-firmware dir
-        run: rm -rf flipperzero-firmware
+  - name: Remove existing flipperzero-firmware dir
+    run: rm -rf flipperzero-firmware
 
-      - name: Clone Flipper Zero Firmware
-        run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
+  - name: Clone Flipper Zero Firmware
+    run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
-      - name: Inject ir_brute_force app into firmware
-        run: |
-         mkdir -p flipperzero-firmware/applications_user/ir_brute_force
-         cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
-         cp applications_user/CMakeLists.txt flipperzero-firmware/applications_user/CMakeLists.txt
+  - name: Inject ir_brute_force app into firmware
+    run: |
+      mkdir -p flipperzero-firmware/applications_user/ir_brute_force
+      cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
+      cp applications_user/CMakeLists.txt flipperzero-firmware/applications_user/CMakeLists.txt
 
-      - name: List application CMakeLists.txt for verification
-        run: |
-          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
-          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
-          cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing .fam"
+  - name: Confirm files exist
+    run: |
+      ls -al flipperzero-firmware/applications_user/ir_brute_force
+      cat flipperzero-firmware/applications_user/CMakeLists.txt
 
-      - name: 🧪 Test ir_brute_force is registered
-        run: |
-          cd flipperzero-firmware
-          ./fbt list | grep fap_ir_brute_force || echo "❌ Still not registered"
+  - name: Add user apps to build tree
+    run: |
+      echo "add_subdirectory(${CMAKE_SOURCE_DIR}/applications_user)" >> flipperzero-firmware/applications/CMakeLists.txt
 
-      - name: Clean previous builds
-        run: rm -rf flipperzero-firmware/build
+  - name: Clean previous builds
+    run: rm -rf flipperzero-firmware/build
 
-      - name: ✅ Build ir_brute_force
-        run: |
-          cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
+  - name: ✅ Build ir_brute_force
+    run: |
+      cd flipperzero-firmware
+      ./fbt fap_ir_brute_force || echo "❌ fap_ir_brute_force not found"
 
-      - name: Upload ir_brute_force.fap
-        uses: actions/upload-artifact@v4
-        with:
-          name: ir_brute_force
-          path: flipperzero-firmware/build/**/ir_brute_force.fap
-          if-no-files-found: error
-          compression-level: 6
-          overwrite: false
-          include-hidden-files: false
+  - name: List FAP targets
+    run: |
+      cd flipperzero-firmware
+      ./fbt | grep fap_ || echo "❌ No FAP targets found"
+
+  - name: Upload ir_brute_force.fap
+    uses: actions/upload-artifact@v4
+    with:
+      name: ir_brute_force
+      path: flipperzero-firmware/build/**/ir_brute_force.fap
+      if-no-files-found: error
+      compression-level: 6
+      overwrite: false
+      include-hidden-files: false
+
