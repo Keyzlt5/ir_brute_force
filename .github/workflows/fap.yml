@@ -66,6 +66,10 @@ jobs:
         run: |
          find flipperzero-firmware/build -name "ir_brute_force.fap" || echo "Still missing"
 
+      - name: Debug List parsed app manifests
+        run: |
+         grep -r "App(" flipperzero-firmware/applications_user || echo "No App() manifests found"
+
       - name: Debug list .fap files
         run: |
           find flipperzero-firmware -name '*.fap' || echo "No FAPs found"
