@@ -36,13 +36,10 @@ jobs:
           cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
           cat flipperzero-firmware/applications_user/ir_brute_force/application.fam
 
-      - name: Build ir_brute_force FAP (fallback to debug)
+      - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
-          ./fbt fap_ir_brute_force || ./fbt fap_ir_brute_force_debug
-
-      - name: Validate FAP Output
-        run: bash scripts/test_ir_brute_force.sh
+          ./fbt ir_brute_force
 
       - name: Upload built FAP artifact
         uses: actions/upload-artifact@v4
@@ -55,11 +52,3 @@ jobs:
         with:
           name: full-build-folder
           path: flipperzero-firmware/build/
-
-  status-badge:
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate README build badge markdown
-        run: |
-          echo "![Build Status](https://github.com/${{ github.repository }}/actions/workflows/fap.yml/badge.svg)" > badge.md
