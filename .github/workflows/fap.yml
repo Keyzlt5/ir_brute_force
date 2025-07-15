@@ -14,6 +14,9 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
 
+      - name: Delete existing flipperzero-firmware if exists
+        run: rm -rf flipperzero-firmware
+
       - name: Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
