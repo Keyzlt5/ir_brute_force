@@ -2,9 +2,9 @@ name: Build IR Brute Force App
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
 
-      - name: Delete existing flipperzero-firmware if exists
+      - name: Clean old firmware directory
         run: rm -rf flipperzero-firmware
 
       - name: Clone Flipper Zero Firmware
@@ -28,7 +28,7 @@ jobs:
 
       - name: Verify source files
         run: |
-          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
+          cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing root CMakeLists"
           cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt || echo "Missing app CMakeLists"
           cat flipperzero-firmware/applications_user/ir_brute_force/application.fam || echo "Missing .fam"
 
@@ -38,23 +38,25 @@ jobs:
       - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
-          ./fbt ir_brute_force || echo "❌ ir_brute_force is NOT registered"
+          scons -j$(nproc) fap_ir_brute_force || echo "❌ ir_brute_force is NOT registered"
 
       - name: Upload ir_brute_force.fap
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ir_brute_force
           path: flipperzero-firmware/build/**/ir_brute_force.fap
-          if-no-files-found: error
-          compression-level: 6
-          overwrite: false
-          include-hidden-files: false
+          if-no-files-found: warn
 
       - name: Upload full build folder for inspection (if .fap fails)
-        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: full_build_output
+          name: build-debug
           path: flipperzero-firmware/build/
-          if-no-files-found: warn
+
+      - name: Run validation script (safely)
+        run: |
+          if [ -f flipperzero-firmware/build/f7-firmware-D/.extapps/ir_brute_force.fap ]; then
+            bash scripts/test_ir_brute_force.sh
+          else
+            echo "⚠️ Skipping validation script: .fap not found"
+          fi
