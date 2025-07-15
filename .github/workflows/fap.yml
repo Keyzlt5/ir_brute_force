@@ -20,6 +20,12 @@ jobs:
       - name: Clone Flipper Zero Firmware
         run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware
 
+      - name: Inject ir_brute_force app into firmware
+        run: |
+         mkdir -p flipperzero-firmware/applications_user/ir_brute_force
+         cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
+         cp applications_user/CMakeLists.txt flipperzero-firmware/applications_user/CMakeLists.txt
+
       - name: List application CMakeLists.txt for verification
         run: |
           cat flipperzero-firmware/applications_user/CMakeLists.txt || echo "Missing CMakeLists"
