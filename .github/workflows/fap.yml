@@ -36,6 +36,9 @@ jobs:
          cat flipperzero-firmware/applications_user/ir_brute_force/ir_brute_force.c
          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
 
+      - name: Validate application.fam
+        run: bash scripts/validate_fam.sh flipperzero-firmware/applications_user/ir_brute_force/application.fam
+
       - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
