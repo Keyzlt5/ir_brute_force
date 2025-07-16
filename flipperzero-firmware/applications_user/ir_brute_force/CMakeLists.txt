@@ -1,1 +1,1 @@
-add_application(ir_brute_force "ir_brute_force.c")
+add_application(fap_ir_brute_force ir_brute_force.c)
