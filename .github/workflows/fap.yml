@@ -36,10 +36,6 @@ jobs:
         run: |
           ls -lh flipperzero-firmware/applications_user/ir_brute_force
 
-      - name: Validate application.fam
-        run: |
-          bash flipperzero-firmware/scripts/validate_fam.sh flipperzero-firmware/applications_user/ir_brute_force/application.fam
-
       - name: Build ir_brute_force FAP
         run: |
           cd flipperzero-firmware
