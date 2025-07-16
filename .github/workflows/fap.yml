@@ -25,7 +25,8 @@ jobs:
 
       - name: Copy your app into firmware tree
         run: |
-          cp -r applications_user/ir_brute_force flipperzero-firmware/applications_user/
+         mkdir -p flipperzero-firmware/applications_user/ir_brute_force
+         cp applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
 
       - name: Register your app in CMakeLists.txt
         run: |
