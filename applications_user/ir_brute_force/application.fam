@@ -1,4 +1,3 @@
 name = "IR Brute Force"
 app_id = "ir_brute_force"
 entry_point = "ir_brute_force.c"
-make = "ir_brute_force"
