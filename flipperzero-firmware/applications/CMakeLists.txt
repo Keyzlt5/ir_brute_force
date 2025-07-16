@@ -1,0 +1,1 @@
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../applications_user ${CMAKE_CURRENT_BINARY_DIR}/applications_user)
