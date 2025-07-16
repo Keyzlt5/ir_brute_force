@@ -1,46 +1,41 @@
+// ir_brute_force.c
 #include <furi.h>
 #include <furi_hal.h>
-#include <infrared/infrared.h>
-#include <infrared/infrared_worker.h>
 #include <gui/gui.h>
-#include <gui/elements.h>
-#include <gui/popup.h>
 #include <input/input.h>
-#include <dialogs/dialogs.h>
-#include <storage/storage.h>
+#include <infrared/infrared.h>
 #include <stdlib.h>
-#include <string.h>
-
-#define NEC_START 0x00FF0000
-#define NEC_END   0x00FFFFFF
-#define DELAY_MS 1000
-#define MAX_CUSTOM_PRESETS 10
-#define CUSTOM_PRESETS_FILE "/any/ir_custom_presets.txt"
-#define IR_EXPORT_FOLDER "/any/ir_exported/"
-
-static void show_help_screen(Gui* gui) {
-    Popup* popup = popup_alloc();
-    popup_set_header(popup, "IR Remote Help", 64, 10, AlignCenter, AlignTop);
-    popup_set_text(popup,
-        "UP/DOWN: Switch Mode\n"
-        "L/R: Cycle Presets\n"
-        "OK: Capture/Send\n"
-        "Long OK: Export IR\n"
-        "Hold BACK: Delete\n",
-        64, 20, AlignLeft, AlignTop);
-    popup_set_icon(popup, NULL);
-    popup_set_timeout(popup, 3000);
-    popup_enable_timeout(popup);
-    popup_show(gui, popup);
-    popup_free(popup);
-}
 
 int32_t ir_brute_force_app(void* p) {
     UNUSED(p);
-    Gui* gui = furi_record_open("gui");
-    
-    show_help_screen(gui);
+    FuriHalPowerProfile profile = furi_hal_power_get_profile();
+    furi_hal_power_enable_otg();
 
-    furi_record_close("gui");
+    Infrared* infrared = infrared_alloc();
+    if(!infrared) return -1;
+
+    const uint32_t delay_ms = 250;
+
+    for(uint32_t code = 0; code <= 0xFFFF; ++code) {
+        uint8_t data[2];
+        data[0] = (code >> 8) & 0xFF;
+        data[1] = code & 0xFF;
+        
+        InfraredRawFrame* frame = infrared_raw_frame_alloc();
+        frame->protocol = InfraredProtocolNEC;
+        frame->address = data[0];
+        frame->command = data[1];
+        frame->repeat = false;
+
+        infrared_transmit_raw_frame(infrared, frame);
+        infrared_raw_frame_free(frame);
+
+        furi_delay_ms(delay_ms);
+    }
+
+    infrared_free(infrared);
+    furi_hal_power_disable_otg();
+    furi_hal_power_set_profile(profile);
+
     return 0;
-}// IR Brute Force app source code
+}
