@@ -32,9 +32,9 @@ jobs:
 
       - name: Verify source file and metadata
         run: |
-          ls flipperzero-firmware/applications_user/ir_brute_force/
-          cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
-          cat flipperzero-firmware/applications_user/ir_brute_force/application.fam
+         ls flipperzero-firmware/applications_user/ir_brute_force/
+         cat flipperzero-firmware/applications_user/ir_brute_force/ir_brute_force.c
+         cat flipperzero-firmware/applications_user/ir_brute_force/CMakeLists.txt
 
       - name: Build ir_brute_force FAP
         run: |
