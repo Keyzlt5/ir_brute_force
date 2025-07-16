@@ -1,48 +1,62 @@
-name: Build IR Brute Force FAP
+name: Here we go again
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout your repo
-      uses: actions/checkout@v3
+      - name: Checkout your repo
+        uses: actions/checkout@v3
 
-    - name: Clean old firmware directory if exists
-      run: rm -rf flipperzero-firmware
+      - name: Clean old firmware directory if exists
+        run: rm -rf flipperzero-firmware
 
-    - name: Clone Flipper Zero Firmware
-      run: git clone --recursive https://github.com/flipperdevices/flipperzero-firmware.git
+      - name: Clone Flipper Zero Firmware
+        run: |
+          git clone --recursive https://github.com/flipperdevices/flipperzero-firmware.git
 
-    - name: Copy your app into firmware tree
-      run: |
-        mkdir -p flipperzero-firmware/applications_user/ir_brute_force
-        cp -r flipperzero-firmware/applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
+      - name: Copy your app into firmware tree
+        run: |
+          mkdir -p flipperzero-firmware/applications_user/ir_brute_force
+          cp -r flipperzero-firmware/applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
 
-    - name: Register your app in CMakeLists.txt
-      run: echo 'add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/applications_user/ir_brute_force ${CMAKE_CURRENT_BINARY_DIR}/applications_user/ir_brute_force)' >> flipperzero-firmware/applications_user/CMakeLists.txt
+      - name: Register your app in CMakeLists.txt
+        run: |
+          echo 'add_subdirectory(ir_brute_force)' >> flipperzero-firmware/applications_user/CMakeLists.txt
 
-    - name: Verify source file and metadata
-      run: |
-        test -f flipperzero-firmware/applications_user/ir_brute_force/ir_brute_force.c
-        test -f flipperzero-firmware/applications_user/ir_brute_force/application.fam
+      - name: Verify source file and metadata
+        run: |
+          ls -lh flipperzero-firmware/applications_user/ir_brute_force
 
-    - name: Validate application.fam
-      run: bash scripts/validate_fam.sh flipperzero-firmware/applications_user/ir_brute_force/application.fam
+      - name: Validate application.fam
+        run: |
+          bash flipperzero-firmware/scripts/validate_fam.sh flipperzero-firmware/applications_user/ir_brute_force/application.fam
 
-    - name: Build ir_brute_force FAP
-      run: |
-        cd flipperzero-firmware
-        ./fbt fap_ir_brute_force
+      - name: Build ir_brute_force FAP
+        run: |
+          cd flipperzero-firmware
+          ./fbt fap_ir_brute_force
 
-    - name: Upload built FAP artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ir_brute_force_fap
-        path: flipperzero-firmware/build/f7-firmware-D/.extapps/ir_brute_force.fap
+      - name: Upload built FAP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ir_brute_force.fap
+          path: flipperzero-firmware/build/f7-firmware-D/fap/ir_brute_force.fap
+
+      - name: Upload full build folder for inspection (if fap fails)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-build
+          path: flipperzero-firmware/build
+
+      - name: Complete job
+        run: echo "✅ Build step finished"
