@@ -1,4 +1,4 @@
-name: Here we go again
+name: Build IR Brute Force FAP
 
 on:
   push:
@@ -25,8 +25,7 @@ jobs:
 
       - name: Copy your app into firmware tree
         run: |
-         mkdir -p flipperzero-firmware/applications_user/ir_brute_force
-         cp -r applications_user/ir_brute_force/* flipperzero-firmware/applications_user/ir_brute_force/
+          cp -r applications_user/ir_brute_force flipperzero-firmware/applications_user/
 
       - name: Register your app in CMakeLists.txt
         run: |
@@ -35,6 +34,10 @@ jobs:
       - name: Verify source file and metadata
         run: |
           ls -lh flipperzero-firmware/applications_user/ir_brute_force
+
+      - name: Validate application.fam
+        run: |
+          bash scripts/validate_fam.sh flipperzero-firmware/applications_user/ir_brute_force/application.fam
 
       - name: Build ir_brute_force FAP
         run: |
