@@ -1,1 +1,0 @@
-add_application(ir_brute_force ir_brute_force.c)
