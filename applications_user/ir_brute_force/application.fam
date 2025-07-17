@@ -1,5 +1,3 @@
-app_id:"ir_brute_force"
-name:"IR Brute Force"
-version:"1.0"
-icon:"ir_brute_force.png"
-entry_point:"ir_brute_force"
+name: IR Brute Force
+app_id: ir_brute_force
+entry_point: ir_brute_force
