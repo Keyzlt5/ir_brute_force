@@ -1,0 +1,5 @@
+name: "IR Brute Force"
+app_id: "ir_brute_force"
+entry_point: "ir_brute_force"
+type: "app"
+version: "1.0.0"
