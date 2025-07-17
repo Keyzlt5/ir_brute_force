@@ -12,7 +12,7 @@ REQUIRED_KEYS=("name" "app_id" "entry_point")
 MISSING=()
 
 for key in "${REQUIRED_KEYS[@]}"; do
-  if ! grep -E "^\s*${key}\s*=" "$FAM_FILE" > /dev/null; then
+  if ! grep -E "^\s*${key}\s*:" "$FAM_FILE" > /dev/null; then
     MISSING+=("$key")
   fi
 done
